@@ -3,12 +3,12 @@ import { ArrowDown, MapPin, Star } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section id="home" className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+    <section id="home" className="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div 
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/2670898/pexels-photo-2670898.jpeg)',
+          backgroundImage: 'url(https://wallpapercat.com/w/full/a/f/e/777485-2160x1080-desktop-dual-screen-angkor-wat-background.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
@@ -45,13 +45,13 @@ export default function Hero() {
           >
             <a href="#places">Start Exploring</a>
           </Button>
-          <Button 
+          {/* <Button 
             variant="outline" 
             size="lg"
-            className="border-white/30 text-white hover:bg-white/10 px-8 py-3 rounded-full font-semibold text-lg backdrop-blur-sm"
+            className="border-white/60 bg-black text-white hover:bg-white/10 px-8 py-3 rounded-full font-semibold text-lg backdrop-blur-sm"
           >
             Watch Video
-          </Button>
+          </Button> */}
         </div>
 
         {/* Stats */}

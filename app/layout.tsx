@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'Cambodia Explore' }],
   creator: 'Cambodia Explore',
   publisher: 'Cambodia Explore',
+  icons : {
+    icon: '/images/logo.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',

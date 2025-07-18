@@ -8,24 +8,22 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { MapPin, Star, Navigation, Search, Filter, Eye } from 'lucide-react';
-import { places, provinces, placeTypes, type Place } from '@/lib/data';
+import { places, placeTypes, type Place } from '@/lib/data';
 
 export default function Places() {
   const router = useRouter();
-  const [selectedProvince, setSelectedProvince] = useState('All Provinces');
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredPlaces = useMemo(() => {
     return places.filter((place) => {
-      const matchesProvince = selectedProvince === 'All Provinces' || place.province === selectedProvince;
       const matchesType = selectedType === 'all' || place.type === selectedType;
       const matchesSearch = place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            place.description.toLowerCase().includes(searchQuery.toLowerCase());
       
-      return matchesProvince && matchesType && matchesSearch;
+      return matchesType && matchesSearch;
     });
-  }, [selectedProvince, selectedType, searchQuery]);
+  }, [selectedType, searchQuery]);
 
   const getDirections = (place: Place) => {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${place.location.lat},${place.location.lng}&travelmode=driving`;
@@ -39,6 +37,7 @@ export default function Places() {
   const getTypeColor = (type: string) => {
     const colors = {
       temple: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
+      caffee: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
       beach: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
       mountain: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
       city: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
@@ -69,7 +68,7 @@ export default function Places() {
             <h3 className="font-semibold">Filter Places</h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -80,20 +79,6 @@ export default function Places() {
                 className="pl-10"
               />
             </div>
-
-            {/* Province Filter */}
-            <Select value={selectedProvince} onValueChange={setSelectedProvince}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Province" />
-              </SelectTrigger>
-              <SelectContent>
-                {provinces.map((province) => (
-                  <SelectItem key={province} value={province}>
-                    {province}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
             {/* Type Filter */}
             <Select value={selectedType} onValueChange={setSelectedType}>
@@ -114,8 +99,7 @@ export default function Places() {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-sm text-muted-foreground">
-            Showing {filteredPlaces.length} of {places.length} places
-            {selectedProvince !== 'All Provinces' && ` in ${selectedProvince}`}
+            Showing {filteredPlaces.length} of {places.length} places in Siem Reap
             {selectedType !== 'all' && ` (${placeTypes.find(t => t.value === selectedType)?.label})`}
           </p>
         </div>
@@ -135,10 +119,6 @@ export default function Places() {
                   <Badge className={getTypeColor(place.type)} variant="secondary">
                     {place.type}
                   </Badge>
-                </div>
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center space-x-1">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-medium">{place.rating}</span>
                 </div>
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
