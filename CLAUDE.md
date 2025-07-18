@@ -4,88 +4,121 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 13 tourism website for Cambodia called "Cambodia Explore" that showcases tourist destinations across Cambodia. The application is configured for static export with static site generation.
+This is a Next.js 13 tourism website for Cambodia (branded as "Siem Reap Guide - Gateway to Angkor Wat") that showcases tourist destinations across Cambodia. The application is configured for static export with static site generation and uses a comprehensive shadcn/ui design system.
 
 ## Key Technologies & Architecture
 
-- **Framework**: Next.js 13 with App Router
-- **UI Components**: Radix UI primitives with shadcn/ui design system
-- **Styling**: Tailwind CSS with CSS variables for theming
-- **Icons**: Lucide React
+- **Framework**: Next.js 13 with App Router and static export (`output: 'export'`)
+- **UI Components**: Complete shadcn/ui design system with Radix UI primitives
+- **Styling**: Tailwind CSS with CSS variables for theming and custom animations
+- **Icons**: Lucide React (extensive icon library)
 - **Type Safety**: TypeScript with strict mode
-- **Theme**: Dark/light mode support via next-themes
-- **Static Export**: Configured for static site generation (`output: 'export'`)
+- **Theme**: Dark/light mode support via next-themes with CSS variables
+- **Static Export**: Configured for static site generation with unoptimized images
 
 ## Commands
 
 - **Development**: `npm run dev` - Start development server
 - **Build**: `npm run build` - Build for production (static export)
-- **Start**: `npm run start` - Start production server
-- **Lint**: `npm run lint` - Run ESLint (ignores during builds)
+- **Start**: `npm run start` - Start production server (for testing static build)
+- **Lint**: `npm run lint` - Run ESLint (disabled during builds via next.config.js)
+- **Type Check**: `npx tsc --noEmit` - Check TypeScript types without building
 
-## Architecture & Structure
+## Architecture & Data Flow
+
+### Core Data Architecture
+The entire application is built around a centralized data structure in `lib/data.ts`:
+
+```typescript
+interface Place {
+  id: string;
+  name: string;
+  province: string;
+  type: 'temple' | 'cafe' | 'beach' | 'mountain' | 'city' | 'nature' | 'cultural';
+  description: string;
+  image: string;
+  images: string[];
+  rating: number;
+  location: { lat: number; lng: number };
+  highlights: string[];
+  bestTimeToVisit: string;
+  entryFee: string;
+  duration: string;
+  difficulty: 'Easy' | 'Moderate' | 'Challenging';
+  facilities: string[];
+  nearbyAttractions: string[];
+}
+```
 
 ### App Structure (App Router)
-- `app/layout.tsx` - Root layout with metadata, fonts, and theme provider
-- `app/page.tsx` - Home page with main components
-- `app/places/[id]/` - Dynamic routes for place details
-  - `page.tsx` - Main place detail page
-  - `page-new.tsx` - Alternative place detail implementation
-  - `place-details-client.tsx` - Client component for place details
+- `app/layout.tsx` - Root layout with metadata, Inter font, theme provider, and SEO configuration
+- `app/page.tsx` - Home page assembling main components (`Header`, `Hero`, `Places`, `Footer`, `ScrollToTop`)
+- `app/places/[id]/` - Dynamic routes for individual place details
+  - `page.tsx` - Static params generation and place lookup
+  - `page-new.tsx` - Alternative implementation (identical to page.tsx)
+  - `place-details-client.tsx` - Feature-rich client component with image galleries, maps integration
 
-### Data Management
-- `lib/data.ts` - Central data store containing:
-  - `Place` interface definition
-  - `places` array with all location data
-  - `provinces` array for filtering
-  - `placeTypes` for categorization
-  - Location coordinates, images, ratings, and detailed information
+### Component Architecture
+- **Layout Components**: `header.tsx` (modern navigation with shadcn NavigationMenu and Sheet), `hero.tsx`, `places.tsx`, `footer.tsx`
+- **UI Enhancement**: `scroll-to-top.tsx` - Global scroll-to-top functionality
+- **Theme Management**: `providers/theme-provider.tsx` - next-themes integration
+- **UI Library**: Complete shadcn/ui component library (40+ components)
+- **Utilities**: `lib/utils.ts` with `cn()` helper for conditional class merging
 
-### Components Architecture
-- `components/` - Reusable components
-  - `header.tsx`, `hero.tsx`, `places.tsx`, `footer.tsx` - Main layout components
-  - `providers/theme-provider.tsx` - Theme context provider
-  - `ui/` - shadcn/ui components library
-- `hooks/` - Custom React hooks (toast functionality)
-- `lib/utils.ts` - Utility functions and cn() helper for class merging
+### Modern UI Features
+- **Navigation**: Desktop navigation menu with dropdowns, mobile sheet sidebar
+- **Image Handling**: Multi-image galleries with modal lightbox, thumbnail navigation
+- **Interactive Elements**: Scroll-to-top button, theme toggle, responsive design
+- **Content Organization**: Card-based layouts, badges for categorization, structured data display
+
+## Data Structure & Content Model
+
+### Place Data Model
+Each place contains comprehensive tourism information:
+- **Core Info**: name, province, type, description, rating
+- **Visual Content**: primary image + gallery arrays (external URLs)
+- **Geographic Data**: lat/lng coordinates for Google Maps integration
+- **Visitor Info**: entry fees, recommended duration, difficulty level
+- **Experience Data**: highlights array, best visiting times, nearby attractions
+- **Practical Info**: facilities available, accessibility information
+
+### Type System
+- `placeTypes` - Categorical filtering with labels ('temple', 'cafe', 'beach', 'mountain', 'city', 'nature', 'cultural')
+- Strict TypeScript interfaces ensure data consistency
+- Province-based organization for geographic filtering
+
+## Development Patterns & Configuration
+
+### Component Patterns
+- **Client Components**: Use `"use client"` directive for interactive components
+- **Static Generation**: All place detail pages are statically generated at build time
+- **Styling**: CSS-in-JS via Tailwind classes, CSS variables for theme consistency
+- **Icons**: Consistent Lucide React icon usage throughout
+
+### Build Configuration
+- **Static Export**: `next.config.js` configures static export with unoptimized images
+- **ESLint**: Disabled during builds to prevent lint issues from blocking deployment
+- **Path Aliases**: `@/` prefix configured for clean imports (components, lib, hooks, ui)
+- **shadcn Configuration**: `components.json` defines component generation settings
 
 ### Styling System
-- Tailwind CSS with custom configuration
-- CSS variables for theme colors in `app/globals.css`
-- Dark/light mode support throughout
-- Responsive design patterns
+- **CSS Variables**: Theme colors defined in `app/globals.css` with dark/light mode variants
+- **Tailwind Extensions**: Custom animations (accordion), border radius variables, extended color system
+- **Responsive Design**: Mobile-first approach with comprehensive breakpoint coverage
 
-## Key Features
+## Key Features & User Experience
 
-1. **Place Discovery**: Filterable grid of tourist destinations
-2. **Search & Filtering**: By province, type, and text search
-3. **Place Details**: Individual pages with galleries, maps, and information
-4. **Google Maps Integration**: Direct links to Google Maps for directions
-5. **Responsive Design**: Mobile-first approach
-6. **Theme Support**: Dark/light mode toggle
+1. **Place Discovery**: Filterable grid with search, type filtering, and province filtering
+2. **Rich Place Details**: Multi-image galleries, interactive maps, comprehensive information
+3. **Navigation**: Modern header with dropdown menus and mobile-optimized sidebar
+4. **Theme Support**: System-aware dark/light mode with smooth transitions
+5. **Enhanced UX**: Scroll-to-top functionality, smooth animations, loading states
+6. **Google Maps Integration**: Direct deep-linking to Google Maps for directions
 
-## Development Notes
+## Important Development Notes
 
-- Images are configured as unoptimized for static export
-- ESLint is disabled during builds
-- Uses absolute imports with `@/` prefix
-- Client components are marked with "use client" directive
-- TypeScript paths configured for clean imports
-- Static export removes server-side functionality
-
-## Data Structure
-
-Places contain comprehensive tourism information including:
-- Basic info (name, province, type, description)
-- Images and ratings
-- Geographic coordinates
-- Visitor information (fees, duration, difficulty)
-- Facilities and nearby attractions
-
-## Important Notes
-
-- No test framework is currently configured in this project
-- The project name in package.json is generic ("nextjs") but refers to the Cambodia Explore tourism site
-- All dependencies are production dependencies - no separate dev dependencies
-- Uses Node.js 20+ compatible packages
-- Static export configuration means no server-side API routes or dynamic server features
+- **No Test Framework**: Currently no testing setup configured
+- **Static-Only**: No server-side functionality - pure static site generation
+- **External Images**: All images hosted externally, configured as unoptimized for static export
+- **SEO Optimized**: Complete metadata setup for social sharing and search engines
+- **Deployment Ready**: Static export generates `out/` directory ready for CDN deployment

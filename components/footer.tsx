@@ -19,8 +19,8 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-muted-foreground mb-6 max-w-md">
-              Your ultimate guide to discovering Cambodia's hidden gems, ancient wonders, and natural beauty.
-              Explore the Kingdom of Wonder with confidence and create unforgettable memories.
+              Discover the magnificent temples of Angkor and the cultural heart of Cambodia. 
+              Experience the ancient wonders and vibrant local life of Siem Reap with expert guidance.
             </p>
 
             {/* Social Media */}
@@ -68,21 +68,21 @@ export default function Footer() {
                 <Phone className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                 <div>
                   <p className="text-sm text-muted-foreground">Phone</p>
-                  <p className="font-medium">+855 81 931 190</p>
+                  <p className="font-medium">+855 12 345 678</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                 <div>
                   <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">srosthai00@gmail.com</p>
+                  <p className="font-medium">info@siemreapexplore.com</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                 <div>
                   <p className="text-sm text-muted-foreground">Address</p>
-                  <p className="font-medium">Siem Reap, Cambodia</p>
+                  <p className="font-medium">Pub Street Area, Siem Reap, Cambodia</p>
                 </div>
               </div>
             </div>
