@@ -15,10 +15,10 @@ const navigationItems = [
   {
     title: "Explore",
     items: [
-      { title: "All Places", href: "#places", description: "Discover amazing destinations across Cambodia", icon: Compass },
-      { title: "Temples", href: "#places", description: "Ancient temples and historical sites", icon: Building2 },
-      { title: "Nature", href: "#places", description: "National parks and natural wonders", icon: Mountain },
-      { title: "Beaches", href: "#places", description: "Beautiful coastal destinations", icon: Waves },
+      { title: "All Places", href: "/#places", description: "Discover amazing destinations across Cambodia", icon: Compass },
+      { title: "Temples", href: "/#places", description: "Ancient temples and historical sites", icon: Building2 },
+      { title: "Nature", href: "/#places", description: "National parks and natural wonders", icon: Mountain },
+      { title: "Beaches", href: "/#places", description: "Beautiful coastal destinations", icon: Waves },
     ]
   }
 ];
@@ -54,7 +54,7 @@ export default function Header() {
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="#home" legacyBehavior passHref>
+                <Link href="/" legacyBehavior passHref>
                   <NavigationMenuLink className={cn(
                     "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
                   )}>
@@ -92,7 +92,7 @@ export default function Header() {
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <Link href="#places" legacyBehavior passHref>
+                <Link href="/#places" legacyBehavior passHref>
                   <NavigationMenuLink className={cn(
                     "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
                   )}>
@@ -146,21 +146,21 @@ export default function Header() {
                   <Separator className="my-4" />
                   
                   <nav className="flex flex-col space-y-4">
-                    <a 
-                      href="#home" 
+                    <Link 
+                      href="/" 
                       className="flex items-center space-x-3 text-sm font-medium hover:text-emerald-600 transition-colors py-2 px-3 rounded-lg hover:bg-accent"
                       onClick={() => setIsOpen(false)}
                     >
                       <Compass className="h-4 w-4" />
                       <span>Home</span>
-                    </a>
+                    </Link>
                     
                     <div className="space-y-2">
                       <div className="text-sm font-medium text-muted-foreground px-3">
                         Explore
                       </div>
                       {navigationItems[0].items.map((item) => (
-                        <a
+                        <Link
                           key={item.title}
                           href={item.href}
                           className="flex items-center space-x-3 text-sm hover:text-emerald-600 transition-colors py-2 px-3 rounded-lg hover:bg-accent"
@@ -171,14 +171,14 @@ export default function Header() {
                             <div className="font-medium">{item.title}</div>
                             <div className="text-xs text-muted-foreground">{item.description}</div>
                           </div>
-                        </a>
+                        </Link>
                       ))}
                     </div>
                     
                     <Separator />
                     
-                    <a 
-                      href="#places" 
+                    <Link 
+                      href="/#places" 
                       className="flex items-center justify-between text-sm font-medium hover:text-emerald-600 transition-colors py-2 px-3 rounded-lg hover:bg-accent"
                       onClick={() => setIsOpen(false)}
                     >
@@ -189,7 +189,7 @@ export default function Header() {
                       <Badge variant="secondary" className="text-xs">
                         38+
                       </Badge>
-                    </a>
+                    </Link>
                   </nav>
                 </div>
               </SheetContent>
