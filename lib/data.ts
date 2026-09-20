@@ -1081,7 +1081,7 @@ export const places: Place[] = [
       'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/11/bb/b2/25/menu.jpg?w=900&h=500&s=1'
     ],
     rating: 4.8,
-    location: { lat: 13.3608, lng: 103.8555 },
+    location: { lat: 13.3591977, lng: 103.8615942 },
     highlights: ['Award-winning barista', 'Cambodian-owned', 'Eco-friendly packaging', 'Own-roasted beans'],
     bestTimeToVisit: 'Morning',
     entryFee: 'Free (pay for drinks)',
@@ -1131,5 +1131,89 @@ export const places: Place[] = [
     difficulty: 'Easy',
     facilities: ['Wi-Fi', 'Air-conditioned indoor seating', 'Takeaway'],
     nearbyAttractions: ['National Road 6', 'Siem Reap town center', 'Angkor National Museum']
+  },
+  {
+    id: '54',
+    name: 'Blue Pumpkin',
+    province: 'Siem Reap',
+    type: 'cafe',
+    description: "Siem Reap's original bakery-cafe, right across from the Old Market since the early 2000s. Blue Pumpkin serves generous breakfasts, sandwiches, cakes, and its famous homemade yogurt shakes and ice cream.",
+    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/f3/fc/6a/local-dessert-the-blue.jpg?w=900&h=500&s=1',
+    images: [
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/f3/fc/6a/local-dessert-the-blue.jpg?w=900&h=500&s=1'
+    ],
+    rating: 4.3,
+    location: { lat: 13.3607, lng: 103.8583 },
+    highlights: ['Homemade yogurt shakes', 'Fresh bakery and cakes', 'Across from Old Market', 'Ice cream parlor'],
+    bestTimeToVisit: 'Morning or afternoon',
+    entryFee: 'Free (pay for food and drinks)',
+    duration: '1 hour',
+    difficulty: 'Easy',
+    facilities: ['Wi-Fi', 'Air-conditioned indoor seating', 'Bakery counter'],
+    nearbyAttractions: ['Old Market', 'Pub Street', 'Siem Reap riverside']
+  },
+  {
+    id: '55',
+    name: 'Peace Cafe Vegetarian Restaurant',
+    province: 'Siem Reap',
+    type: 'cafe',
+    description: 'A riverside cafe next to An Kau Saa Pagoda serving vegetarian and vegan Khmer dishes in a peaceful tropical garden. Peace Cafe runs a fair-trade craft shop and a monk-chat program alongside its healthy menu.',
+    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/08/7d/89/cc/the-peace-cafe.jpg?w=900&h=500&s=1',
+    images: [
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/08/7d/89/cc/the-peace-cafe.jpg?w=900&h=500&s=1',
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0a/d1/0a/46/tofu-amok.jpg?w=900&h=500&s=1',
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/bc/18/48/peaceful-garden.jpg?w=900&h=500&s=1'
+    ],
+    rating: 4.5,
+    location: { lat: 13.3552, lng: 103.8617 },
+    highlights: ['Vegetarian and vegan menu', 'Tropical garden setting', 'Fair-trade craft shop', 'Monk-chat program'],
+    bestTimeToVisit: 'Lunch or afternoon',
+    entryFee: 'Free (pay for food and drinks)',
+    duration: '1-2 hours',
+    difficulty: 'Easy',
+    facilities: ['Wi-Fi', 'Outdoor garden seating', 'Craft shop'],
+    nearbyAttractions: ['Siem Reap riverside', 'Wat Bo', 'Old Market']
+  },
+  {
+    id: '56',
+    name: 'Temple Coffee n Bakery',
+    province: 'Siem Reap',
+    type: 'cafe',
+    description: 'A cafe in the Wat Bo area set in a renovated traditional Khmer building across from the Siem Reap River. Temple Coffee n Bakery pairs handcrafted coffee with European-style baking and local flavors like pandan croissants.',
+    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/22/88/15/temple-coffee-bakery.jpg?w=900&h=500&s=1',
+    images: [
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/22/88/15/temple-coffee-bakery.jpg?w=900&h=500&s=1',
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/26/80/06/temple-coffee-n-bakery.jpg?w=900&h=500&s=1'
+    ],
+    rating: 4.0,
+    location: { lat: 13.3556, lng: 103.8625 },
+    highlights: ['Renovated Khmer building', 'Riverside Wat Bo location', 'European-style bakery', 'Handcrafted coffee'],
+    bestTimeToVisit: 'Morning or afternoon',
+    entryFee: 'Free (pay for food and drinks)',
+    duration: '1 hour',
+    difficulty: 'Easy',
+    facilities: ['Wi-Fi', 'Outdoor seating', 'Bakery counter'],
+    nearbyAttractions: ['Wat Bo', 'Siem Reap riverside', 'Old Market']
+  },
+  {
+    id: '57',
+    name: 'Common Grounds Cafe',
+    province: 'Siem Reap',
+    type: 'cafe',
+    description: 'A social enterprise cafe donating 100% of profits to humanitarian projects across Cambodia. Common Grounds serves quality coffee, pastries, and a Western-and-Asian menu in a well air-conditioned, laptop-friendly space.',
+    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/03/2c/36/3a/common-grounds.jpg?w=900&h=500&s=1',
+    images: [
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/03/2c/36/3a/common-grounds.jpg?w=900&h=500&s=1',
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/12/d0/22/ec/front-counter.jpg?w=900&h=500&s=1'
+    ],
+    rating: 4.7,
+    location: { lat: 13.3572284, lng: 103.8573254 },
+    highlights: ['100% profits to charity', 'Strong Wi-Fi and air conditioning', 'Cinnamon scrolls', 'Western and Khmer menu'],
+    bestTimeToVisit: 'Morning or lunchtime',
+    entryFee: 'Free (pay for food and drinks)',
+    duration: '1-2 hours',
+    difficulty: 'Easy',
+    facilities: ['Wi-Fi', 'Air-conditioned indoor seating', 'Laptop-friendly'],
+    nearbyAttractions: ['Old Market', 'Pub Street', 'Siem Reap town center']
   }
 ];
