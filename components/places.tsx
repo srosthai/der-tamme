@@ -1,196 +1,165 @@
 "use client";
 
-import { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { MapPin, Star, Navigation, Search, Filter, Eye } from 'lucide-react';
-import { places, placeTypes, type Place } from '@/lib/data';
+import { MapPin, Navigation, Search, Star, X } from 'lucide-react';
+import type { Place } from '@/lib/data';
+import { getPlaceTypeMeta } from '@/lib/place-styles';
+import { cn } from '@/lib/utils';
+import { usePlaceFilters } from '@/components/place-filters';
 
 export default function Places() {
-  const router = useRouter();
-  const [selectedType, setSelectedType] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const filteredPlaces = useMemo(() => {
-    return places.filter((place) => {
-      const matchesType = selectedType === 'all' || place.type === selectedType;
-      const matchesSearch = place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           place.description.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      return matchesType && matchesSearch;
-    });
-  }, [selectedType, searchQuery]);
+  const { query, type, selectType, setQuery, reset, visible, typeOptions, total, selectedTypeLabel } =
+    usePlaceFilters();
 
   const getDirections = (place: Place) => {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${place.location.lat},${place.location.lng}&travelmode=driving`;
     window.open(url, '_blank');
   };
 
-  const viewDetails = (placeId: string) => {
-    router.push(`/places/${placeId}`);
-  };
-
-  const getTypeColor = (type: string) => {
-    const colors = {
-      temple: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
-      caffee: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-      beach: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-      mountain: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-      city: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-      nature: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
-      cultural: 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400'
-    };
-    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
-
   return (
-    <section id="places" className="py-16 bg-gradient-to-b from-background to-muted/50">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Discover Amazing 
-            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent"> Places</span>
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore Cambodia's most beautiful destinations, from ancient temples to pristine beaches and lush natural wonders.
-          </p>
-        </div>
+    <section id="places" className="scroll-mt-16 bg-background pt-10 md:pt-16">
+      <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
+        <h2 className="text-[26px] font-semibold leading-tight tracking-[-0.02em] md:text-4xl">
+          Discover amazing places
+        </h2>
+        <p className="mt-2.5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground md:text-base">
+          Explore Cambodia&apos;s most beautiful destinations, from ancient temples to floating
+          villages and lush natural wonders.
+        </p>
 
-        {/* Filters */}
-        <div className="bg-card rounded-xl p-6 mb-8 shadow-lg border">
-          <div className="flex items-center gap-2 mb-4">
-            <Filter className="w-5 h-5 text-emerald-600" />
-            <h3 className="font-semibold">Filter Places</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search places..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            {/* Type Filter */}
-            <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {placeTypes.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-sm text-muted-foreground">
-            Showing {filteredPlaces.length} of {places.length} places in Siem Reap
-            {selectedType !== 'all' && ` (${placeTypes.find(t => t.value === selectedType)?.label})`}
-          </p>
-        </div>
-
-        {/* Places Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPlaces.map((place) => (
-            <Card key={place.id} className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
-              {/* Image */}
-              <div className="relative h-48 overflow-hidden cursor-pointer" onClick={() => viewDetails(place.id)}>
-                <img
-                  src={place.image}
-                  alt={place.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                />
-                <div className="absolute top-4 left-4">
-                  <Badge className={getTypeColor(place.type)} variant="secondary">
-                    {place.type}
-                  </Badge>
-                </div>
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button variant="secondary" size="sm">
-                      <Eye className="w-4 h-4 mr-2" />
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <CardHeader>
-                <CardTitle className="text-xl font-bold group-hover:text-emerald-600 transition-colors cursor-pointer" onClick={() => viewDetails(place.id)}>
-                  {place.name}
-                </CardTitle>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {place.province}
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                  {place.description}
-                </p>
-                
-                {/* Highlights */}
-                <div className="flex flex-wrap gap-2">
-                  {place.highlights.slice(0, 2).map((highlight, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {highlight}
-                    </Badge>
-                  ))}
-                  {place.highlights.length > 2 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{place.highlights.length - 2} more
-                    </Badge>
+        <div className="sticky top-14 z-30 -mx-5 mt-5 border-b border-border/50 bg-background/80 px-5 py-3 backdrop-blur-xl md:static md:mx-0 md:mt-7 md:border-b-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none">
+          <div className="rail no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 pb-0.5 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
+            {typeOptions.map((option) => {
+              const isSelected = type === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => selectType(option.value)}
+                  aria-pressed={isSelected}
+                  className={cn(
+                    'inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 text-[13px] font-medium transition-colors',
+                    isSelected
+                      ? 'border-transparent bg-emerald-600 text-white'
+                      : 'border-border/60 bg-background text-muted-foreground hover:border-border hover:text-foreground'
                   )}
-                </div>
-              </CardContent>
-
-              <CardFooter className="flex gap-2">
-                <Button
-                  onClick={() => viewDetails(place.id)}
-                  variant="outline"
-                  className="flex-1 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 dark:hover:bg-emerald-900/20"
                 >
-                  <Eye className="w-4 h-4 mr-2" />
-                  View Details
-                </Button>
-                <Button
-                  onClick={() => getDirections(place)}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
-                >
-                  <Navigation className="w-4 h-4 mr-2" />
-                  Directions
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                  {option.label}
+                  <span
+                    className={cn(
+                      'text-[12px] tabular-nums',
+                      isSelected ? 'text-white/75' : 'text-muted-foreground/80'
+                    )}
+                  >
+                    {option.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* No Results */}
-        {filteredPlaces.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">No places found</h3>
-            <p className="text-muted-foreground">
+        <p className="mt-5 flex flex-wrap items-center gap-x-1.5 text-[13px] text-muted-foreground" aria-live="polite">
+          <span>
+            {visible.length} of {total} places in Siem Reap
+            {type !== 'all' && selectedTypeLabel && ` · ${selectedTypeLabel}`}
+          </span>
+          {query.trim().length > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[12px] text-foreground">
+              {query.trim()}
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+                className="flex h-5 w-5 items-center justify-center rounded-full transition-colors hover:bg-background"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+        </p>
+
+        {visible.length > 0 && (
+          <div className="mt-4 grid gap-4 pb-8 md:grid-cols-2 md:gap-6 lg:grid-cols-3 md:pb-16">
+            {visible.map((place) => {
+              const typeMeta = getPlaceTypeMeta(place.type);
+              return (
+                <article
+                  key={place.id}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-colors hover:border-border"
+                >
+                  <Link
+                    href={`/places/${place.id}`}
+                    className="block outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                      <img
+                        src={place.image}
+                        alt={place.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                      />
+                      <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1 text-[12px] font-medium text-white backdrop-blur-md">
+                        <span className={cn('h-1.5 w-1.5 rounded-full', typeMeta.dot)} />
+                        {typeMeta.label}
+                      </span>
+                      <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[12px] font-semibold tabular-nums text-neutral-900 backdrop-blur-md dark:bg-black/50 dark:text-white">
+                        <Star className="h-3 w-3 fill-emerald-600 text-emerald-600 dark:fill-emerald-400 dark:text-emerald-400" />
+                        {place.rating.toFixed(1)}
+                      </span>
+                    </div>
+
+                    <div className="px-4 pb-4 pt-3.5">
+                      <h3 className="text-[17px] font-semibold leading-snug tracking-[-0.01em] transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
+                        {place.name}
+                      </h3>
+                      <p className="mt-1 flex items-center gap-1.5 text-[13px] text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        {place.province}
+                      </p>
+                      <p className="mt-2.5 line-clamp-2 text-[14px] leading-relaxed text-muted-foreground">
+                        {place.description}
+                      </p>
+                    </div>
+                  </Link>
+
+                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-border/60 px-4 py-2"
+                  >
+                    <span className="truncate text-[13px] text-muted-foreground">
+                      {place.duration} · {place.difficulty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => getDirections(place)}
+                      className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold text-emerald-700 transition-colors hover:bg-emerald-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-emerald-400"
+                    >
+                      <Navigation className="h-3.5 w-3.5" />
+                      Directions
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+
+        {visible.length === 0 && (
+          <div className="mt-4 rounded-2xl border border-dashed border-border/70 px-6 py-14 text-center">
+            <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Search className="h-5 w-5 text-muted-foreground" />
+            </span>
+            <h3 className="text-[16px] font-semibold">No places found</h3>
+            <p className="mx-auto mt-1.5 max-w-sm text-[14px] leading-relaxed text-muted-foreground">
               Try adjusting your filters or search terms to find more places.
             </p>
+            <Button
+              variant="outline"
+              onClick={reset}
+              className="mt-5 h-10 rounded-full px-5 text-[14px]"
+            >
+              Clear filters
+            </Button>
           </div>
         )}
       </div>

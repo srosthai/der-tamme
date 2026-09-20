@@ -1,30 +1,26 @@
 "use client";
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Star, 
-  Navigation, 
-  Clock, 
-  DollarSign, 
+import {
+  ArrowLeft,
   Calendar,
   Camera,
+  Check,
   ChevronLeft,
   ChevronRight,
+  Clock,
+  Gauge,
+  MapPin,
+  Navigation,
+  Star,
+  Ticket,
   X,
-  Info,
-  Mountain,
-  Wifi,
-  Car,
-  Coffee
 } from 'lucide-react';
 import { type Place } from '@/lib/data';
+import { difficultyDot, getPlaceTypeMeta } from '@/lib/place-styles';
+import { cn } from '@/lib/utils';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import ScrollToTop from '@/components/scroll-to-top';
@@ -33,341 +29,352 @@ interface PlaceDetailsClientProps {
   place: Place;
 }
 
+const glassPill =
+  'inline-flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur-md';
+
+const glassButton =
+  'inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-colors hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70';
+
 export default function PlaceDetailsClient({ place }: PlaceDetailsClientProps) {
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
-  const getDirections = () => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${place.location.lat},${place.location.lng}`;
-    window.open(url, '_blank');
-  };
+  const imageCount = place.images.length;
+  const typeMeta = getPlaceTypeMeta(place.type);
 
-  const getTypeColor = (type: string) => {
-    const colors = {
-      temple: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
-      caffee: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-      beach: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-      mountain: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-      city: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-      nature: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
-      cultural: 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400'
-    };
-    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
+  const nextImage = useCallback(() => {
+    setCurrentImageIndex((prev) => (prev + 1) % imageCount);
+  }, [imageCount]);
 
-  const getDifficultyColor = (difficulty: string) => {
-    const colors = {
-      Easy: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-      Moderate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-      Challenging: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-    };
-    return colors[difficulty as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % place.images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + place.images.length) % place.images.length);
-  };
+  const prevImage = useCallback(() => {
+    setCurrentImageIndex((prev) => (prev - 1 + imageCount) % imageCount);
+  }, [imageCount]);
 
   const openGallery = (index: number) => {
     setCurrentImageIndex(index);
     setIsGalleryOpen(true);
   };
 
+  const getDirections = () => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${place.location.lat},${place.location.lng}`;
+    window.open(url, '_blank');
+  };
+
+  useEffect(() => {
+    if (!isGalleryOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsGalleryOpen(false);
+      if (event.key === 'ArrowRight') nextImage();
+      if (event.key === 'ArrowLeft') prevImage();
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isGalleryOpen, nextImage, prevImage]);
+
+  const facts = [
+    { label: 'Best time', value: place.bestTimeToVisit, icon: Calendar },
+    { label: 'Entrance', value: place.entryFee, icon: Ticket },
+    { label: 'Time needed', value: place.duration, icon: Clock },
+    { label: 'Difficulty', value: place.difficulty, icon: Gauge, dot: difficultyDot[place.difficulty] },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen min-h-[100dvh] bg-background">
       <Header />
-      
-      <main className="container mx-auto px-4 py-8">
-        {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          onClick={() => router.push('/')}
-          className="mb-6 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-900/20"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Places
-        </Button>
 
-        {/* Hero Section */}
-        <div className="relative h-[60vh] rounded-2xl overflow-hidden mb-8 group">
-          <img
-            src={place.images[currentImageIndex]}
-            alt={place.name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          
-          {/* Image Navigation */}
-          {place.images.length > 1 && (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white"
-                onClick={prevImage}
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white"
-                onClick={nextImage}
-              >
-                <ChevronRight className="w-6 h-6" />
-              </Button>
-            </>
-          )}
+      <main className="pb-2 md:pb-0">
+        {/* Photo hero */}
+        <div className="relative md:mx-auto md:mt-6 md:w-full md:max-w-6xl md:px-8">
+          <div className="relative h-[54vh] min-h-[320px] overflow-hidden md:h-[56vh] md:rounded-3xl">
+            <img
+              src={place.images[currentImageIndex]}
+              alt={`${place.name} photo ${currentImageIndex + 1}`}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/30" />
 
-          {/* Image Counter */}
-          <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
-            {currentImageIndex + 1} / {place.images.length}
-          </div>
-
-          {/* Gallery Button */}
-          <Button
-            onClick={() => openGallery(currentImageIndex)}
-            className="absolute bottom-4 right-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border-white/30"
-            variant="outline"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            View Gallery
-          </Button>
-
-          {/* Place Info Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-            <div className="flex items-center gap-2 mb-2">
-              <Badge className={getTypeColor(place.type)} variant="secondary">
-                {place.type}
-              </Badge>
-              <Badge className={getDifficultyColor(place.difficulty)} variant="secondary">
-                {place.difficulty}
-              </Badge>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-2">{place.name}</h1>
-            <div className="flex items-center text-lg opacity-90">
-              <MapPin className="w-5 h-5 mr-2" />
-              {place.province}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Description */}
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4 flex items-center">
-                  <Info className="w-6 h-6 mr-2 text-emerald-600" />
-                  About This Place
-                </h2>
-                <p className="text-muted-foreground leading-relaxed text-lg">
-                  {place.description}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Highlights */}
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Highlights</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {place.highlights.map((highlight, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
-                      <span className="text-muted-foreground">{highlight}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Facilities */}
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Facilities & Services</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {place.facilities.map((facility, index) => (
-                    <div key={index} className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg">
-                      <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
-                        {facility.toLowerCase().includes('parking') && <Car className="w-4 h-4 text-emerald-600" />}
-                        {facility.toLowerCase().includes('wifi') && <Wifi className="w-4 h-4 text-emerald-600" />}
-                        {facility.toLowerCase().includes('food') && <Coffee className="w-4 h-4 text-emerald-600" />}
-                        {!facility.toLowerCase().includes('parking') && !facility.toLowerCase().includes('wifi') && !facility.toLowerCase().includes('food') && <Mountain className="w-4 h-4 text-emerald-600" />}
-                      </div>
-                      <span className="text-sm font-medium">{facility}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Nearby Attractions */}
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4">Nearby Attractions</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {place.nearbyAttractions.map((attraction, index) => (
-                    <div key={index} className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <MapPin className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                      <span className="text-muted-foreground">{attraction}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Info */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-4">Quick Info</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="w-4 h-4 text-purple-500" />
-                      <span className="text-sm font-medium">Best Time</span>
-                    </div>
-                    <span className="font-bold text-right text-sm">{place.bestTimeToVisit}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Actions */}
-            <Card>
-              <CardContent className="p-6">
-                <Button
-                  onClick={getDirections}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mb-4"
-                  size="lg"
-                >
-                  <Navigation className="w-5 h-5 mr-2" />
-                  Get Directions
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  size="lg"
-                  onClick={() => openGallery(0)}
-                >
-                  <Camera className="w-5 h-5 mr-2" />
-                  View All Photos
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Image Thumbnails */}
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold mb-4">Photo Gallery</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {place.images.slice(0, 4).map((image, index) => (
-                    <div
-                      key={index}
-                      className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
-                      onClick={() => openGallery(index)}
-                    >
-                      <img
-                        src={image}
-                        alt={`${place.name} ${index + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      {index === 3 && place.images.length > 4 && (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <span className="text-white font-bold">+{place.images.length - 4}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </main>
-
-      {/* Image Gallery Modal */}
-      {isGalleryOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
-          <div className="relative w-full h-full flex items-center justify-center p-4">
-            {/* Close Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-4 right-4 text-white hover:bg-white/20 z-10"
-              onClick={() => setIsGalleryOpen(false)}
+            <button
+              type="button"
+              onClick={() => router.push('/')}
+              className={cn(glassButton, 'absolute left-4 top-[max(1rem,env(safe-area-inset-top))]')}
+              aria-label="Back to places"
             >
-              <X className="w-6 h-6" />
-            </Button>
+              <ArrowLeft className="h-4 w-4" />
+            </button>
 
-            {/* Navigation Buttons */}
-            {place.images.length > 1 && (
+            <div className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex items-center gap-2">
+              <span className={glassPill}>
+                {currentImageIndex + 1} / {imageCount}
+              </span>
+              <button
+                type="button"
+                onClick={() => openGallery(currentImageIndex)}
+                className={glassButton}
+                aria-label="Open photo gallery"
+              >
+                <Camera className="h-4 w-4" />
+              </button>
+            </div>
+
+            {imageCount > 1 && (
               <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-10"
+                <button
+                  type="button"
                   onClick={prevImage}
+                  className={cn(glassButton, 'absolute left-4 top-1/2 hidden -translate-y-1/2 md:inline-flex')}
+                  aria-label="Previous photo"
                 >
-                  <ChevronLeft className="w-8 h-8" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-10"
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
                   onClick={nextImage}
+                  className={cn(glassButton, 'absolute right-4 top-1/2 hidden -translate-y-1/2 md:inline-flex')}
+                  aria-label="Next photo"
                 >
-                  <ChevronRight className="w-8 h-8" />
-                </Button>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
               </>
             )}
 
-            {/* Main Image */}
-            <img
-              src={place.images[currentImageIndex]}
-              alt={`${place.name} ${currentImageIndex + 1}`}
-              className="max-w-full max-h-full object-contain"
-            />
+            <div className="absolute inset-x-5 bottom-5 md:inset-x-7 md:bottom-7">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={glassPill}>
+                  <span className={cn('h-1.5 w-1.5 rounded-full', typeMeta.dot)} />
+                  {typeMeta.label}
+                </span>
+                <span className={glassPill}>
+                  <Star className="h-3 w-3 fill-emerald-300 text-emerald-300" />
+                  {place.rating.toFixed(1)}
+                </span>
+              </div>
 
-            {/* Image Counter */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full">
-              {currentImageIndex + 1} / {place.images.length}
+              <h1 className="mt-3 text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-white md:text-5xl">
+                {place.name}
+              </h1>
+              <p className="mt-2 flex items-center gap-1.5 text-[13px] text-white/75 md:text-[14px]">
+                <MapPin className="h-3.5 w-3.5" />
+                {place.province}, Cambodia
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)] gap-10 px-5 pt-8 md:px-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-12 lg:pt-12">
+          {/* Story */}
+          <div className="order-2 divide-y divide-border/60 lg:order-1">
+            <section className="py-7 first:pt-0 last:pb-0">
+              <h2 className="text-[15px] font-semibold tracking-[-0.01em]">About this place</h2>
+              <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+                {place.description}
+              </p>
+            </section>
+
+            <section className="py-7 first:pt-0 last:pb-0">
+              <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Highlights</h2>
+              <ul className="mt-3 flex flex-col gap-2.5">
+                {place.highlights.map((highlight) => (
+                  <li key={highlight} className="flex items-start gap-2.5">
+                    <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
+                      <Check className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
+                    </span>
+                    <span className="text-[14px] leading-snug text-muted-foreground">
+                      {highlight}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="py-7 first:pt-0 last:pb-0">
+              <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Facilities &amp; services</h2>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {place.facilities.map((facility) => (
+                  <li
+                    key={facility}
+                    className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-3 py-1.5 text-[13px] text-foreground/80"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
+                    {facility}
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section className="py-7 first:pt-0 last:pb-0">
+              <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Nearby attractions</h2>
+              <ul className="mt-3 flex flex-col gap-2.5">
+                {place.nearbyAttractions.map((attraction) => (
+                  <li key={attraction} className="flex items-center gap-2.5 text-[14px] text-muted-foreground">
+                    <MapPin className="h-4 w-4 shrink-0 text-muted-foreground/70" />
+                    {attraction}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+
+          {/* Facts, photos and actions */}
+          <aside className="order-1 space-y-6 lg:order-2 lg:sticky lg:top-24 lg:self-start">
+            <dl className="divide-y divide-border/60 border-y border-border/60 lg:rounded-2xl lg:border lg:px-4">
+              {facts.map((fact) => (
+                <div key={fact.label} className="flex items-start gap-3 py-3.5">
+                  <fact.icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <dt className="text-[13px] text-muted-foreground">{fact.label}</dt>
+                  <dd className="ml-auto max-w-[60%] text-right text-[14px] font-medium leading-snug">
+                    {fact.dot && (
+                      <span
+                        className={cn('mr-1.5 inline-block h-2 w-2 rounded-full align-middle', fact.dot)}
+                      />
+                    )}
+                    {fact.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="hidden gap-2.5 lg:flex">
+              <Button
+                onClick={getDirections}
+                className="h-11 flex-1 rounded-full border-0 bg-gradient-to-r from-emerald-500 to-teal-600 text-[14px] font-semibold text-white hover:from-emerald-500 hover:to-teal-600 hover:brightness-110"
+              >
+                <Navigation className="h-4 w-4" />
+                Get directions
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => openGallery(0)}
+                className="h-11 rounded-full border-border/60 px-4 text-[14px]"
+              >
+                <Camera className="h-4 w-4" />
+                Photos
+              </Button>
             </div>
 
-            {/* Thumbnail Strip */}
-            <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-2 max-w-full overflow-x-auto">
-              {place.images.map((image, index) => (
-                <div
-                  key={index}
-                  className={`w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
-                    index === currentImageIndex ? 'border-white' : 'border-transparent opacity-60 hover:opacity-100'
-                  }`}
-                  onClick={() => setCurrentImageIndex(index)}
+            <div>
+              <h2 className="text-[13px] font-semibold text-muted-foreground lg:px-1">Photo gallery</h2>
+              <div className="rail no-scrollbar -mx-5 mt-3 flex gap-2.5 overflow-x-auto px-5 pb-1 md:-mx-8 md:scroll-px-8 md:px-8 lg:mx-0 lg:px-1">
+                {place.images.map((image, index) => (
+                  <button
+                    key={image}
+                    type="button"
+                    onClick={() => openGallery(index)}
+                    className={cn(
+                      'relative h-20 w-28 shrink-0 overflow-hidden rounded-xl ring-offset-2 ring-offset-background transition-all lg:h-24 lg:w-full',
+                      index === currentImageIndex ? 'ring-2 ring-emerald-600' : 'opacity-80 hover:opacity-100'
+                    )}
+                    aria-label={`Open photo ${index + 1}`}
+                  >
+                    <img src={image} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      {/* Sticky mobile actions */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/80 px-5 pb-[calc(env(safe-area-inset-bottom)_+_0.75rem)] pt-3 backdrop-blur-xl lg:hidden">
+        <div className="flex gap-2.5">
+          <Button
+            onClick={getDirections}
+            className="h-11 flex-1 rounded-full border-0 bg-gradient-to-r from-emerald-500 to-teal-600 text-[15px] font-semibold text-white hover:from-emerald-500 hover:to-teal-600 hover:brightness-110"
+          >
+            <Navigation className="h-4 w-4" />
+            Get directions
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => openGallery(currentImageIndex)}
+            className="h-11 rounded-full border-border/60 px-4 text-[14px]"
+          >
+            <Camera className="h-4 w-4" />
+            Photos
+          </Button>
+        </div>
+      </div>
+
+      <Footer />
+      <ScrollToTop />
+
+      {/* Full screen gallery */}
+      {isGalleryOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${place.name} photo gallery`}
+          className="fixed inset-0 z-[60] bg-black/95"
+        >
+          <div className="relative flex h-full w-full items-center justify-center px-4 pb-24 pt-16">
+            <img
+              src={place.images[currentImageIndex]}
+              alt={`${place.name} photo ${currentImageIndex + 1}`}
+              className="max-h-full max-w-full object-contain"
+            />
+
+            <button
+              type="button"
+              onClick={() => setIsGalleryOpen(false)}
+              className={cn(glassButton, 'absolute right-4 top-[max(1rem,env(safe-area-inset-top))]')}
+              aria-label="Close gallery"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <span className={cn(glassPill, 'absolute left-1/2 top-[max(1rem,env(safe-area-inset-top))] -translate-x-1/2')}>
+              {currentImageIndex + 1} / {imageCount}
+            </span>
+
+            {imageCount > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={prevImage}
+                  className={cn(glassButton, 'absolute left-3 top-1/2 -translate-y-1/2')}
+                  aria-label="Previous photo"
                 >
-                  <img
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={nextImage}
+                  className={cn(glassButton, 'absolute right-3 top-1/2 -translate-y-1/2')}
+                  aria-label="Next photo"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
+            )}
+
+            <div className="rail no-scrollbar absolute inset-x-0 bottom-0 flex gap-2 overflow-x-auto px-5 pb-[calc(env(safe-area-inset-bottom)_+_1rem)] pt-2">
+              {place.images.map((image, index) => (
+                <button
+                  key={image}
+                  type="button"
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={cn(
+                    'h-14 w-20 shrink-0 overflow-hidden rounded-lg transition-opacity',
+                    index === currentImageIndex ? 'ring-2 ring-white' : 'opacity-50 hover:opacity-90'
+                  )}
+                  aria-label={`Show photo ${index + 1}`}
+                >
+                  <img src={image} alt="" className="h-full w-full object-cover" />
+                </button>
               ))}
             </div>
           </div>
         </div>
       )}
-
-      <Footer />
-      <ScrollToTop />
     </div>
   );
 }

@@ -111,7 +111,8 @@ const Carousel = React.forwardRef<
         return;
       }
 
-      onSelect(api);
+      // Embla only emits `select` on change, so sync the initial index once here.
+      onSelect(api); // eslint-disable-line react-hooks/set-state-in-effect
       api.on('reInit', onSelect);
       api.on('select', onSelect);
 

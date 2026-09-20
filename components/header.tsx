@@ -1,200 +1,169 @@
 "use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Moon, Sun, Menu, MapPin, Compass, Camera, Mountain, Building2, Waves } from 'lucide-react';
+import { useEffect, useState, type MouseEvent } from 'react';
+import { Moon, Search, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
+import { usePlaceFilters } from '@/components/place-filters';
 
-const navigationItems = [
-  {
-    title: "Explore",
-    items: [
-      { title: "All Places", href: "/#places", description: "Discover amazing destinations across Cambodia", icon: Compass },
-      { title: "Temples", href: "/#places", description: "Ancient temples and historical sites", icon: Building2 },
-      { title: "Nature", href: "/#places", description: "National parks and natural wonders", icon: Mountain },
-      { title: "Beaches", href: "/#places", description: "Beautiful coastal destinations", icon: Waves },
-    ]
-  }
-];
+const navLinkClass =
+  'inline-flex h-10 items-center rounded-full px-3.5 text-[14px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
-export default function Header() {
-  const [isOpen, setIsOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br shadow-lg transition-all duration-300">
-              <img src="/images/logo.png" alt="" />
-            </div>
-            <div className="flex flex-col">
-              <div className="font-bold text-lg leading-none bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                DER TAM ME
-              </div>
-              <div className="text-xs text-muted-foreground leading-none mt-0.5">
-                Explore Cambodia
-              </div>
-            </div>
-          </Link>
+    <button
+      type="button"
+      aria-label="Toggle theme"
+      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+      className="inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <Sun className="h-[18px] w-[18px] dark:hidden" />
+      <Moon className="hidden h-[18px] w-[18px] dark:block" />
+    </button>
+  );
+}
 
-          {/* Desktop Navigation */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(
-                    "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
-                  )}>
-                    Home
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-background">
-                  Explore
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {navigationItems[0].items.map((item) => (
-                      <li key={item.title}>
+export default function Header() {
+  const [scrolled, setScrolled] = useState(false);
+  const [openSection, setOpenSection] = useState('');
+  const { typeOptions, selectType, goToPlaces, focusSearch } = usePlaceFilters();
+
+  // Keep in-page anchors instant on the home page while still linking home from detail pages.
+  const anchorTo = (id: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    event.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  useEffect(() => {
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => setScrolled(window.scrollY > 8));
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, []);
+
+  return (
+    <header className="sticky top-0 z-40 md:px-4 md:pt-3">
+      <div
+        className={cn(
+          'flex h-14 items-center gap-3 border-b border-border/60 bg-background/80 px-5 backdrop-blur-xl md:mx-auto md:grid md:h-14 md:max-w-5xl md:grid-cols-[1fr_auto_1fr] md:gap-2 md:rounded-full md:border md:px-3',
+          scrolled && 'md:shadow-lg md:shadow-black/5 dark:md:shadow-black/40'
+        )}
+      >
+        <Link href="/#home" onClick={anchorTo('home')} className="flex min-w-0 items-center gap-2.5 py-1 md:gap-2">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-600">
+            <img src="/images/logo.png" alt="" className="h-full w-full object-cover" />
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-[15px] font-semibold leading-tight tracking-[-0.01em]">
+              DER TAM ME
+            </span>
+            <span className="block truncate text-[11px] leading-tight text-muted-foreground">
+              Siem Reap · Cambodia
+            </span>
+          </span>
+        </Link>
+
+        <NavigationMenu
+          value={openSection}
+          onValueChange={setOpenSection}
+          className="hidden md:block"
+        >
+          <NavigationMenuList className="gap-0.5">
+            <NavigationMenuItem value="home">
+              <Link href="/#home" className={navLinkClass} onClick={anchorTo('home')}>
+                Home
+              </Link>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem value="explore">
+              <NavigationMenuTrigger className="h-10 rounded-full px-3.5 text-[14px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground data-[state=open]:bg-muted">
+                Explore
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[380px] grid-cols-2 gap-1 p-2">
+                  {typeOptions
+                    .filter((option) => option.value !== 'all')
+                    .map((option) => (
+                      <li key={option.value}>
                         <NavigationMenuLink asChild>
-                          <a
-                            href={item.href}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground group"
+                          <button
+                            type="button"
+                            onClick={() => {
+                              selectType(option.value);
+                              goToPlaces();
+                              setOpenSection('');
+                            }}
+                            className="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-[14px] font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
-                            <div className="flex items-center gap-2">
-                              <item.icon className="h-4 w-4 text-emerald-600" />
-                              <div className="text-sm font-medium leading-none">{item.title}</div>
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              {item.description}
-                            </p>
-                          </a>
+                            {option.label}
+                            <span className="text-[12px] font-normal tabular-nums text-muted-foreground">
+                              {option.count}
+                            </span>
+                          </button>
                         </NavigationMenuLink>
                       </li>
                     ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <Link href="/#places" legacyBehavior passHref>
-                  <NavigationMenuLink className={cn(
-                    "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
-                  )}>
-                    Places
-                    <Badge variant="secondary" className="ml-2 text-xs">
-                      38+
-                    </Badge>
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
 
-          {/* Actions */}
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="w-9 h-9 rounded-full"
-            >
-              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
+            <NavigationMenuItem value="places">
+              <Link
+                href="/#places"
+                className={navLinkClass}
+                onClick={(event) => {
+                  selectType('all');
+                  anchorTo('places')(event);
+                }}
+              >
+                Places
+              </Link>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
 
-            {/* Mobile Menu */}
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden w-9 h-9 rounded-full">
-                  <Menu className="h-4 w-4" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center space-x-3 pb-4">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600">
-                      <MapPin className="h-4 w-4 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                        DER TAM ME
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Explore Cambodia
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Separator className="my-4" />
-                  
-                  <nav className="flex flex-col space-y-4">
-                    <Link 
-                      href="/" 
-                      className="flex items-center space-x-3 text-sm font-medium hover:text-emerald-600 transition-colors py-2 px-3 rounded-lg hover:bg-accent"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Compass className="h-4 w-4" />
-                      <span>Home</span>
-                    </Link>
-                    
-                    <div className="space-y-2">
-                      <div className="text-sm font-medium text-muted-foreground px-3">
-                        Explore
-                      </div>
-                      {navigationItems[0].items.map((item) => (
-                        <Link
-                          key={item.title}
-                          href={item.href}
-                          className="flex items-center space-x-3 text-sm hover:text-emerald-600 transition-colors py-2 px-3 rounded-lg hover:bg-accent"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <item.icon className="h-4 w-4" />
-                          <div>
-                            <div className="font-medium">{item.title}</div>
-                            <div className="text-xs text-muted-foreground">{item.description}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                    
-                    <Separator />
-                    
-                    <Link 
-                      href="/#places" 
-                      className="flex items-center justify-between text-sm font-medium hover:text-emerald-600 transition-colors py-2 px-3 rounded-lg hover:bg-accent"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <Camera className="h-4 w-4" />
-                        <span>All Places</span>
-                      </div>
-                      <Badge variant="secondary" className="text-xs">
-                        38+
-                      </Badge>
-                    </Link>
-                  </nav>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+        <div className="hidden items-center gap-1.5 md:flex md:justify-self-end">
+          <button
+            type="button"
+            aria-label="Search places"
+            onClick={focusSearch}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <Search className="h-[18px] w-[18px]" />
+          </button>
+          <ThemeToggle />
+          <Link
+            href="/#places"
+            onClick={(event) => {
+              selectType('all');
+              anchorTo('places')(event);
+            }}
+            className="ml-1 inline-flex h-10 items-center rounded-full bg-emerald-600 px-4 text-[14px] font-medium text-white transition-colors hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            Explore places
+          </Link>
         </div>
       </div>
     </header>
