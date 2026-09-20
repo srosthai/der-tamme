@@ -262,7 +262,7 @@ export default function PlaceDetailsClient({ place }: PlaceDetailsClientProps) {
 
             <div>
               <h2 className="text-[13px] font-semibold text-muted-foreground lg:px-1">Photo gallery</h2>
-              <div className="rail no-scrollbar -mx-5 mt-3 flex gap-2.5 overflow-x-auto px-5 pb-1 md:-mx-8 md:scroll-px-8 md:px-8 lg:mx-0 lg:px-1">
+              <div className="rail no-scrollbar -mx-5 mt-3 flex gap-2.5 overflow-x-auto px-5 pb-1 md:-mx-8 md:scroll-px-8 md:px-8 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-1 lg:pb-0">
                 {place.images.map((image, index) => (
                   <button
                     key={image}

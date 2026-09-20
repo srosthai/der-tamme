@@ -56,7 +56,7 @@ export default function Hero() {
         </p>
 
         <div className="relative mt-6 md:mt-8 md:max-w-xl">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted-foreground md:text-white/70" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-[18px] w-[18px] -translate-y-1/2 text-muted-foreground md:text-white/70" />
           <input
             id="place-search"
             type="text"

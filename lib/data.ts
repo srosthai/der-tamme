@@ -1068,5 +1068,68 @@ export const places: Place[] = [
     difficulty: 'Easy',
     facilities: ['Wi-Fi', 'Outdoor seating', 'Air-conditioned indoor seating'],
     nearbyAttractions: ['Pub Street', 'Angkor National Museum', 'Siem Reap town center']
+  },
+  {
+    id: '51',
+    name: 'Brother Bong Cafe',
+    province: 'Siem Reap',
+    type: 'cafe',
+    description: 'A Cambodian-owned cafe on Street 20 led by award-winning barista Bunthoeun. Brother Bong roasts its own beans and serves espresso, iced lattes, and healthy Khmer-and-international breakfasts in eco-friendly packaging.',
+    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/d5/63/17/great-cafefood-and-drinks.jpg?w=900&h=500&s=1',
+    images: [
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/d5/63/17/great-cafefood-and-drinks.jpg?w=900&h=500&s=1',
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/11/bb/b2/25/menu.jpg?w=900&h=500&s=1'
+    ],
+    rating: 4.8,
+    location: { lat: 13.3608, lng: 103.8555 },
+    highlights: ['Award-winning barista', 'Cambodian-owned', 'Eco-friendly packaging', 'Own-roasted beans'],
+    bestTimeToVisit: 'Morning',
+    entryFee: 'Free (pay for drinks)',
+    duration: '1-2 hours',
+    difficulty: 'Easy',
+    facilities: ['Wi-Fi', 'Outdoor seating', 'Air-conditioned indoor seating'],
+    nearbyAttractions: ['Pub Street', 'Old Market', 'Siem Reap town center']
+  },
+  {
+    id: '52',
+    name: 'New Leaf Eatery & Book Cafe',
+    province: 'Siem Reap',
+    type: 'cafe',
+    description: 'A social enterprise cafe in a restored Chinese shophouse near the Old Market, donating 30% of profits to local education projects. New Leaf pairs Khmer and Western dishes with coffee grown in Ratanakiri and Mondulkiri, plus a book exchange.',
+    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/d3/53/87/new-leaf-book-cafe.jpg?w=900&h=500&s=1',
+    images: [
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/07/d3/53/87/new-leaf-book-cafe.jpg?w=900&h=500&s=1',
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/05/f6/1f/86/iced-latte.jpg?w=900&h=500&s=1'
+    ],
+    rating: 4.7,
+    location: { lat: 13.3583, lng: 103.8608 },
+    highlights: ['Supports local education', 'Book exchange', 'Cambodian-grown coffee', 'Sunday brunch with live music'],
+    bestTimeToVisit: 'Morning or Sunday brunch',
+    entryFee: 'Free (pay for food and drinks)',
+    duration: '1-2 hours',
+    difficulty: 'Easy',
+    facilities: ['Wi-Fi', 'Outdoor seating', 'Book exchange'],
+    nearbyAttractions: ['Old Market', 'Siem Reap riverside', 'Pub Street']
+  },
+  {
+    id: '53',
+    name: 'Brown Coffee',
+    province: 'Siem Reap',
+    type: 'cafe',
+    description: "Cambodia's homegrown coffee franchise, with a spacious, air-conditioned branch on National Road 6. Brown Coffee roasts on-site and serves espresso drinks, pastries, and light meals such as sandwiches and pasta.",
+    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/c1/30/2b/brown-coffee-afternoon.jpg?w=900&h=500&s=1',
+    images: [
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/c1/30/2b/brown-coffee-afternoon.jpg?w=900&h=500&s=1',
+      'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/c1/2e/b3/brown-coffee-on-national.jpg?w=900&h=500&s=1'
+    ],
+    rating: 4.4,
+    location: { lat: 13.3665, lng: 103.8562 },
+    highlights: ['On-site roasting', 'Cambodian coffee franchise', 'Free Wi-Fi', 'All-day menu'],
+    bestTimeToVisit: 'Morning or afternoon',
+    entryFee: 'Free (pay for food and drinks)',
+    duration: '1-2 hours',
+    difficulty: 'Easy',
+    facilities: ['Wi-Fi', 'Air-conditioned indoor seating', 'Takeaway'],
+    nearbyAttractions: ['National Road 6', 'Siem Reap town center', 'Angkor National Museum']
   }
 ];

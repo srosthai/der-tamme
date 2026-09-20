@@ -81,13 +81,13 @@ export default function Places() {
         </p>
 
         {visible.length > 0 && (
-          <div className="mt-4 grid gap-4 pb-8 md:grid-cols-2 md:gap-6 lg:grid-cols-3 md:pb-16">
+          <div className="mt-4 grid grid-cols-2 gap-3 pb-8 sm:gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3 md:pb-16">
             {visible.map((place) => {
               const typeMeta = getPlaceTypeMeta(place.type);
               return (
                 <article
                   key={place.id}
-                  className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-colors hover:border-border"
+                  className="group flex flex-col overflow-hidden rounded-xl border border-border/60 bg-card transition-colors hover:border-border md:rounded-2xl"
                 >
                   <Link
                     href={`/places/${place.id}`}
@@ -100,42 +100,42 @@ export default function Places() {
                         loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                       />
-                      <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1 text-[12px] font-medium text-white backdrop-blur-md">
+                      <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-md md:left-3 md:top-3 md:gap-1.5 md:px-2.5 md:py-1 md:text-[12px]">
                         <span className={cn('h-1.5 w-1.5 rounded-full', typeMeta.dot)} />
                         {typeMeta.label}
                       </span>
-                      <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[12px] font-semibold tabular-nums text-neutral-900 backdrop-blur-md dark:bg-black/50 dark:text-white">
-                        <Star className="h-3 w-3 fill-emerald-600 text-emerald-600 dark:fill-emerald-400 dark:text-emerald-400" />
+                      <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold tabular-nums text-neutral-900 backdrop-blur-md dark:bg-black/50 dark:text-white md:right-3 md:top-3 md:px-2.5 md:py-1 md:text-[12px]">
+                        <Star className="h-2.5 w-2.5 fill-emerald-600 text-emerald-600 dark:fill-emerald-400 dark:text-emerald-400 md:h-3 md:w-3" />
                         {place.rating.toFixed(1)}
                       </span>
                     </div>
 
-                    <div className="px-4 pb-4 pt-3.5">
-                      <h3 className="text-[17px] font-semibold leading-snug tracking-[-0.01em] transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
+                    <div className="px-2.5 pb-2.5 pt-2 md:px-4 md:pb-4 md:pt-3.5">
+                      <h3 className="text-[13px] font-semibold leading-snug tracking-[-0.01em] transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400 md:text-[17px]">
                         {place.name}
                       </h3>
-                      <p className="mt-1 flex items-center gap-1.5 text-[13px] text-muted-foreground">
-                        <MapPin className="h-3.5 w-3.5 shrink-0" />
-                        {place.province}
+                      <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground md:gap-1.5 md:text-[13px]">
+                        <MapPin className="h-3 w-3 shrink-0 md:h-3.5 md:w-3.5" />
+                        <span className="truncate">{place.province}</span>
                       </p>
-                      <p className="mt-2.5 line-clamp-2 text-[14px] leading-relaxed text-muted-foreground">
+                      <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground md:mt-2.5 md:text-[14px]">
                         {place.description}
                       </p>
                     </div>
                   </Link>
 
-                  <div className="mt-auto flex items-center justify-between gap-3 border-t border-border/60 px-4 py-2"
-                  >
-                    <span className="truncate text-[13px] text-muted-foreground">
+                  <div className="mt-auto flex items-center justify-between gap-2 border-t border-border/60 px-2.5 py-1.5 md:gap-3 md:px-4 md:py-2">
+                    <span className="truncate text-[10px] text-muted-foreground md:text-[13px]">
                       {place.duration} · {place.difficulty}
                     </span>
                     <button
                       type="button"
                       onClick={() => getDirections(place)}
-                      className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold text-emerald-700 transition-colors hover:bg-emerald-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-emerald-400"
+                      aria-label={`Get directions to ${place.name}`}
+                      className="inline-flex h-8 shrink-0 items-center gap-1 rounded-full px-2 text-[11px] font-semibold text-emerald-700 transition-colors hover:bg-emerald-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-emerald-400 md:h-10 md:gap-1.5 md:px-3.5 md:text-[13px]"
                     >
                       <Navigation className="h-3.5 w-3.5" />
-                      Directions
+                      <span className="hidden md:inline">Directions</span>
                     </button>
                   </div>
                 </article>
