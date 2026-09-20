@@ -61,6 +61,16 @@ export default function PlaceDetailsClient({ place }: PlaceDetailsClientProps) {
     window.open(url, '_blank');
   };
 
+  const goBack = () => {
+    // Prefer browser history so the places list keeps its scroll position;
+    // only fall back to a fresh "/" when this page was opened directly (no history to return to).
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/');
+    }
+  };
+
   useEffect(() => {
     if (!isGalleryOpen) return;
 
@@ -104,7 +114,7 @@ export default function PlaceDetailsClient({ place }: PlaceDetailsClientProps) {
 
             <button
               type="button"
-              onClick={() => router.push('/')}
+              onClick={goBack}
               className={cn(glassButton, 'absolute left-4 top-[max(1rem,env(safe-area-inset-top))]')}
               aria-label="Back to places"
             >
